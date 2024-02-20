@@ -1,0 +1,101 @@
+﻿<Window x:Class="GeoMeasure.Views.AreaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GeoMeasure.Views"
+        xmlns:vm="clr-namespace:GeoMeasure.ViewModels"
+        xmlns:conv="clr-namespace:GeoMeasure.Models.Converters"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                mc:Ignorable="d" FontSize="16" MinHeight="250" MinWidth="420"  Name="Main"
+        Title="Площадь" Height="600" Width="900" Background="#FFDCEDFF" FontFamily="Tahoma">
+    <Window.Resources>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" Invert="False"/>
+        <conv:NullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" Invert="True"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="200" Width="300" MaxWidth="400"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <DockPanel Grid.Row="0" Grid.Column="0">
+            <Label DockPanel.Dock="Bottom" Content="{Binding Area.CalcArea}"/>
+            <Label Content="Название площади:"/>
+            <TextBox Text="{Binding AreaName}" Margin="3"/>
+        </DockPanel>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Точки площади:"/>
+        <ListBox Margin="4" Grid.Row="2" ItemsSource="{Binding Area.Points}" SelectedItem="{Binding SelectedPoint}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel>
+                        <!--<Label Content="{Binding DataContext, RelativeSource={RelativeSource Self}}"/>-->
+                        <Label Content="X: "/>
+                        <TextBox MinWidth="40" Text="{Binding X}" >
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="LostFocus">
+                                    <i:InvokeCommandAction Command="{Binding DataContext.SavePointCommand, ElementName=Main}" CommandParameter="{Binding}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                        <Label Content=" Y: "/>
+                        <TextBox MinWidth="40" Text="{Binding Y}" >
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="LostFocus">
+                                    <i:InvokeCommandAction Command="{Binding DataContext.SavePointCommand, ElementName=Main}" CommandParameter="{Binding}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <DockPanel Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right">
+            <Button Command="{Binding AddPointCommand}" Margin="2" Width="100px" Content="Добавить"/>
+            <Button Command="{Binding DeletePointCommand}" Margin="2" Width="100px" Content="Удалить"/>
+        </DockPanel>
+
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Профили:"/>
+        <ListBox Margin="4" Grid.Row="5" ItemsSource="{Binding Area.Profiles}" SelectedItem="{Binding SelectedProfile}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel>
+                        <Button  Command="{Binding DataContext.OpenProfileCommand, ElementName=Main}" CommandParameter="{Binding}" Content="Открыть"/>
+                        <Label Content="{Binding Operator}" Visibility="{Binding Operator, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <Label Content="Не назначено" Visibility="{Binding Operator, Converter={StaticResource InvertedNullToVisibilityConverter}}"/>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <DockPanel Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right">
+            <Button Command="{Binding AddProfileCommand}" Margin="2" Width="100px" Content="Добавить"/>
+            <Button Command="{Binding DeleteProfileCommand}" Margin="2" Width="100px" Content="Удалить"/>
+        </DockPanel>
+
+
+        <GridSplitter Grid.Column="1" ShowsPreview="False" Width="5" Grid.RowSpan="10" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+        <Label Grid.Row="0" Grid.Column="2" Content="Визуализация"/>
+        <ScrollViewer  Grid.Row="1" Grid.RowSpan="10" Grid.Column="2"  HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+            <Image Source="{Binding Image}" Stretch="Uniform" Margin="4">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseWheel">
+                        <i:InvokeCommandAction Command="{Binding ZoomCommand}" PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
+        </ScrollViewer>
+    </Grid>
+</Window>

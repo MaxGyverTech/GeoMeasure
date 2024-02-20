@@ -1,0 +1,29 @@
+﻿<Window x:Class="GeoMeasure.Views.ProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GeoMeasure.Views"
+        mc:Ignorable="d"
+        Title="Проект" Height="155" Width="250" FontSize="16" Background="#FFDCEDFF" FontFamily="Tahoma">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Label>Имя</Label>
+        <TextBox Grid.Column="1" Text="{Binding Path=Name}" Margin="6,6,6,6"/>
+
+        <Label Grid.Row="1">Адрес</Label>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=Address}" Margin="6,6,6,6"/>
+
+        <Button Grid.Row="3" Content="Отмена" IsCancel="True" Margin="6,6,6,6"/>
+        <Button Grid.Row="3"  Grid.Column="1"  Content="OK" IsDefault="True" Click="Button_Click"  Margin="6,6,6,6" />
+    </Grid>
+</Window>
