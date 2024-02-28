@@ -116,7 +116,17 @@ namespace GeoMeasure.ViewModels
             var vp = e.MouseDevice.GetPosition(image);
             image.RenderTransformOrigin = new Point(vp.X/image.ActualWidth, vp.Y/image.ActualHeight);
         }
-
+        void Redraw()
+        {
+            var vis = new VisDraw();
+            foreach (var area in SelectedProject?.Areas ?? new())
+            {
+                area.Draw(vis, area == SelectedArea ? Brushes.Yellow : (area.IsCorrect() ? Brushes.Green : Brushes.Red));
+                foreach (var profile in area.Profiles ?? new())
+                    profile.Draw(vis, area == SelectedArea ? Brushes.Yellow : (profile.IsCorrect() ? Brushes.Green : Brushes.Red));
+            }
+            Image = vis.Render();
+        }
         public DrawingImage Image
         {
             get { return image; }
@@ -155,16 +165,6 @@ namespace GeoMeasure.ViewModels
                 Redraw();
             }
         }
-        void Redraw()
-        {
-            var vis = new VisDraw();
-            foreach (var area in SelectedProject?.Areas ?? new())
-            {
-                area.Draw(vis, area == SelectedArea ? Brushes.Yellow : Brushes.Green);
-                foreach (var profile in area.Profiles ?? new())
-                    profile.Draw(vis, area == SelectedArea ? Brushes.Yellow : Brushes.Green);
-            }
-            Image = vis.Render();
-        }
+        
     }
 }

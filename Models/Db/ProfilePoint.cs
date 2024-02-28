@@ -54,6 +54,6 @@ namespace GeoMeasure.Models.Db
             }
         }
         [NotMapped]
-        public Point AsPoint => new Point(x, y);
+        public Point P => new Point(x, y);
     }
 }

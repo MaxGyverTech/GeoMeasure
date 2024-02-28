@@ -32,8 +32,10 @@ namespace GeoMeasure.ViewModels
             AddOperatorCommand = new(AddOperator);
             DeleteOperatorCommand = new(DeleteOperator, (o) => SelectedOperator != null);
             AddPointCommand = new(AddPoint);
+            AddRandomPointCommand = new(AddRandomPoint);
             DeletePointCommand = new(DeletePoint, (o) => SelectedPoint != null);
             AddPicketCommand = new(AddPicket);
+            AddRandomPicketCommand = new(AddRandomPicket);
             DeletePicketCommand = new(DeletePicket, (o) => SelectedPicket != null);
             SavePicketCommand = new(SavePicket);
             SavePointCommand = new(SavePoint);
@@ -43,8 +45,10 @@ namespace GeoMeasure.ViewModels
         public RelayCommand AddOperatorCommand { get; set; }
         public RelayCommand DeleteOperatorCommand { get; set; }
         public RelayCommand AddPointCommand { get; set; }
+        public RelayCommand AddRandomPointCommand { get; set; }
         public RelayCommand DeletePointCommand { get; set; }
         public RelayCommand AddPicketCommand { get; set; }
+        public RelayCommand AddRandomPicketCommand { get; set; }
         public RelayCommand DeletePicketCommand { get; set; }
         public RelayCommand SavePicketCommand { get; set; }
         public RelayCommand SavePointCommand { get; set; }
@@ -75,6 +79,23 @@ namespace GeoMeasure.ViewModels
             OnPropertyChanged(nameof(Profile));
             Redraw();
         }
+        void AddRandomPoint(object obj)
+        {
+            ProfilePoint p, pp = Profile.Points?.Count > 0 ? Profile.Points.Last() : new() { X = Profile.Area.Points[0].X, Y=Profile.Area.Points[0].Y };
+            int off = 15;
+            Random r = new();
+            while (true)
+            {
+                p = new ProfilePoint() { X = pp.X + r.Next(-off, off), Y = pp.Y + r.Next(-off, off), Profile = Profile };
+                db.ProfilePoints.Add(p);
+                if (Profile.IsCorrect()) break;
+                else db.ProfilePoints.Remove(p);
+            }
+            db.SaveChanges();
+            SelectedPoint = p;
+            OnPropertyChanged(nameof(Profile));
+            Redraw();
+        }
         void DeletePoint(object obj)
         {
             db.ProfilePoints.Remove(SelectedPoint);
@@ -84,6 +105,18 @@ namespace GeoMeasure.ViewModels
         void AddPicket(object obj)
         {
             var p = new Picket() { Profile = Profile };
+            db.Pickets.Add(p);
+            db.SaveChanges();
+            SelectedPicket = p;
+            OnPropertyChanged(nameof(Profile));
+            Redraw();
+        }
+        void AddRandomPicket(object obj)
+        {
+            Random r = new();
+            ProfilePoint pp = Profile.Points?.Count > 0 ? Profile.Points[r.Next(Profile.Points.Count)] : new() { X = 0, Y = 0 };
+            int off = 10;
+            var p = new Picket() { Profile = Profile, X = pp.X + r.Next(-off, off), Y = pp.Y + r.Next(-off, off), Th = r.Next(-off, off), Ra = r.Next(-off, off), K = r.Next(-off, off) };
             db.Pickets.Add(p);
             db.SaveChanges();
             SelectedPicket = p;
@@ -137,7 +170,7 @@ namespace GeoMeasure.ViewModels
             var vd = new VisDraw();
             foreach (var p in pickets)
                 vd.DrawLine(p.proj.X, p.proj.Y, p.pic.X, p.pic.Y, Brushes.Orange, 0.2);
-            Profile.Draw(vd, Brushes.Green);
+            Profile.Draw(vd, (Profile.IsCorrect() ? Brushes.Green : Brushes.Red));
             foreach (var p in Profile.Points ?? new())
                 vd.DrawCircle(p.X, p.Y, 0.5, SelectedPoint == p ? Brushes.Yellow : Brushes.Green);
             foreach (var p in Profile.Pickets ?? new())

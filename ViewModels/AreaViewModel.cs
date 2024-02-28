@@ -30,6 +30,7 @@ namespace GeoMeasure.ViewModels
         {
             Area = area;
             AddPointCommand = new(AddPoint);
+            AddRandomPointCommand = new(AddRandomPoint);
             DeletePointCommand = new(DeletePoint, (o) => SelectedPoint != null);
             AddProfileCommand = new(AddProfile);
             DeleteProfileCommand = new(DeleteProfile, (o) => SelectedProfile != null);
@@ -39,6 +40,7 @@ namespace GeoMeasure.ViewModels
             Redraw();
         }
         public RelayCommand AddPointCommand { get; set; }
+        public RelayCommand AddRandomPointCommand { get; set; }
         public RelayCommand DeletePointCommand { get; set; }
         public RelayCommand AddProfileCommand { get; set; }
         public RelayCommand DeleteProfileCommand { get; set; }
@@ -50,6 +52,24 @@ namespace GeoMeasure.ViewModels
         {
             var p = new AreaPoint() { X=0, Y=0, Area=Area };
             db.AreaPoints.Add(p);
+            db.SaveChanges();
+            SelectedPoint = p;
+            OnPropertyChanged(nameof(Area));
+            Area.CalcArea = 0;
+            Redraw();
+        }
+        void AddRandomPoint(object obj)
+        {
+            AreaPoint pp = Area.Points?.Count > 0 ? Area.Points.Last() : new() { X = 0, Y = 0 }, p;
+            int off = 25;
+            Random r = new();
+            while (true)
+            {
+                p = new AreaPoint() { X = pp.X + r.Next(-off, off), Y = pp.Y + r.Next(-off, off), Area = Area };
+                db.AreaPoints.Add(p);
+                if (Area.IsCorrect()) break;
+                else db.AreaPoints.Remove(p);
+            }
             db.SaveChanges();
             SelectedPoint = p;
             OnPropertyChanged(nameof(Area));
@@ -116,11 +136,12 @@ namespace GeoMeasure.ViewModels
         void Redraw()
         {
             var vd = new VisDraw();
-            Area.Draw(vd, Brushes.Green);
+            Area.Draw(vd, Area.IsCorrect()? Brushes.Green : Brushes.Red);
             foreach (var p in Area.Points ?? new())
                 vd.DrawCircle(p.X, p.Y, 0.6, SelectedPoint == p ? Brushes.Yellow : Brushes.Green);
             foreach (var p in Area.Profiles ?? new())
-                p.Draw(vd, p == SelectedProfile ? Brushes.Yellow : Brushes.Green);
+                p.Draw(vd, p == SelectedProfile ? (p.IsCorrect() ? Brushes.Yellow : Brushes.Orange) 
+                                                : (p.IsCorrect() ? Brushes.Green : Brushes.Red));
             Image = vd.Render();
 
         }

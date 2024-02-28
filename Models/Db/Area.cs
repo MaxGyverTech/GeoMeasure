@@ -29,7 +29,7 @@ namespace GeoMeasure.Models.Db
         public void Draw(VisDraw gd, Brush br)
         {
             if (points is null) return;
-            gd.DrawPoly(points.Select(p => p.AsPoint).ToArray(), br, 0.5, true);
+            gd.DrawPoly(points.Select(p => p.P).ToArray(), br, 0.5, true);
             foreach (var p in points)
                 gd.DrawText($"{p.X},{p.Y}", p.X, p.Y, Brushes.Black,1.5);
 
@@ -52,6 +52,21 @@ namespace GeoMeasure.Models.Db
                 return Math.Abs(area);
             }
             set => OnPropertyChanged(nameof(CalcArea));
+        }
+        public bool IsCorrect()
+        {
+            for (int i = 0; i < points?.Count; i++)
+                for (int j = i + 1; j < points.Count; j++)
+                    if (AreCrossing(points[i], points[(i + 1)%points.Count], points[j], points[(j + 1) % points.Count]))
+                        return false;
+            return true;
+        }               
+
+        public bool AreCrossing(AreaPoint p1, AreaPoint p2, AreaPoint p3, AreaPoint p4) 
+        {
+            double mult(double ax, double ay, double bx, double by) => ax * by - bx * ay;
+            return ((mult(p4.X-p3.X, p4.Y-p3.Y, p1.X-p3.X, p1.Y-p3.Y) * mult(p4.X-p3.X, p4.Y-p3.Y, p2.X-p3.X, p2.Y-p3.Y)) < 0 && 
+                    (mult(p2.X-p1.X, p2.Y-p1.Y, p3.X-p1.X, p3.Y-p1.Y) * mult(p2.X-p1.X, p2.Y-p1.Y, p4.X-p1.X, p4.Y-p1.Y)) < 0);
         }
         public int Id
         {

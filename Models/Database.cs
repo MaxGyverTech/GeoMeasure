@@ -26,7 +26,7 @@ namespace GeoMeasure.Models
             if (instance == null)
             {
                 instance = new Database();
-                //instance.Database.EnsureDeleted();
+                instance.Database.EnsureDeleted();
                 var exists = instance.Database.EnsureCreated();
 
                 instance.Customers.Load();

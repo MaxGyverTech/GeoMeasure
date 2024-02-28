@@ -64,8 +64,9 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <DockPanel Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right">
-            <Button Command="{Binding AddPointCommand}" Margin="2" Width="100px" Content="Добавить"/>
-            <Button Command="{Binding DeletePointCommand}" Margin="2" Width="100px" Content="Удалить"/>
+            <Button Command="{Binding AddRandomPointCommand}" Margin="2" Width="110px" Content="Сгенерировать"/>
+            <Button Command="{Binding AddPointCommand}" Margin="2" Width="90px" Content="Добавить"/>
+            <Button Command="{Binding DeletePointCommand}" Margin="2" Width="90px" Content="Удалить"/>
         </DockPanel>
 
 
@@ -137,8 +138,9 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <DockPanel Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right">
-            <Button Command="{Binding AddPicketCommand}" Margin="2" Width="100px" Content="Добавить"/>
-            <Button Command="{Binding DeletePicketCommand}" Margin="2" Width="100px" Content="Удалить"/>
+            <Button Command="{Binding AddRandomPicketCommand}" Margin="2" Width="110px" Content="Сгенерировать"/>
+            <Button Command="{Binding AddPicketCommand}" Margin="2" Width="90px" Content="Добавить"/>
+            <Button Command="{Binding DeletePicketCommand}" Margin="2" Width="90px" Content="Удалить"/>
         </DockPanel>
 
 
