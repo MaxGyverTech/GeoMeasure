@@ -49,8 +49,8 @@ namespace GeoMeasure.Models.Db
                 }
 
             }
-            if ((miny < 0 && maxy > 0) || drawAxies) DrawLine(minx, 0, maxx, 0, Brushes.Gray, 0.2);
-            if ((minx < 0 && maxx > 0) || drawAxies) DrawLine(0, miny, 0, maxy, Brushes.Gray, 0.2);
+            if ((miny < 0 && maxy > 0) || drawAxies) DrawLine(minx, 0, maxx, 0, Brushes.DarkGray, 0.2);
+            if ((minx < 0 && maxx > 0) || drawAxies) DrawLine(0, miny, 0, maxy, Brushes.DarkGray, 0.2);
             foreach (var p in chilndren) dg.Children.Add(p);
             return new DrawingImage(dg);
         }

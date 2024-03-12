@@ -51,15 +51,16 @@ namespace GeoMeasure.Models.Db
             return true;
         }
 
-        public bool AreCrossing(Point p1, Point p2, Point p3, Point p4, bool colideSegments = true)
+        public bool AreCrossing(Point a1, Point a2, Point b1, Point b2, bool colideSegments = true)
         {
             double mult(double ax, double ay, double bx, double by) => ax * by - bx * ay;
-            if ((mult(p4.X - p3.X, p4.Y - p3.Y, p1.X - p3.X, p1.Y - p3.Y) * mult(p4.X - p3.X, p4.Y - p3.Y, p2.X - p3.X, p2.Y - p3.Y)) < 0 &&
-                (mult(p2.X - p1.X, p2.Y - p1.Y, p3.X - p1.X, p3.Y - p1.Y) * mult(p2.X - p1.X, p2.Y - p1.Y, p4.X - p1.X, p4.Y - p1.Y)) < 0) return true;
-            if ((IsPointOnSegment(p1, p3, p4, colideSegments) || IsPointOnSegment(p2, p3, p4, colideSegments) ||
-                 IsPointOnSegment(p3, p1, p2, colideSegments) || IsPointOnSegment(p4, p1, p2, colideSegments))) return true;
+            if ((mult(b2.X - b1.X, b2.Y - b1.Y, a1.X - b1.X, a1.Y - b1.Y) * mult(b2.X - b1.X, b2.Y - b1.Y, a2.X - b1.X, a2.Y - b1.Y)) < 0 &&
+                (mult(a2.X - a1.X, a2.Y - a1.Y, b1.X - a1.X, b1.Y - a1.Y) * mult(a2.X - a1.X, a2.Y - a1.Y, b2.X - a1.X, b2.Y - a1.Y)) < 0) return true;
+            if ((IsPointOnSegment(a1, b1, b2, colideSegments) || IsPointOnSegment(a2, b1, b2, colideSegments) ||
+                 IsPointOnSegment(b1, a1, a2, colideSegments) || IsPointOnSegment(b2, a1, a2, colideSegments))) return true;
             return false;
         }
+
         static double Distance(Point point1, Point point2)
         {
             double dx = point2.X - point1.X;
@@ -68,12 +69,15 @@ namespace GeoMeasure.Models.Db
         }
         static bool IsPointOnSegment(Point p, Point l1, Point l2, bool colideSegments)
         {
+            if (p.X == 5)
+                p = p;
             if (!colideSegments && (p==l1 || p == l2)) return false;
             if (p.X >= Math.Min(l1.X, l2.X) && p.X <= Math.Max(l1.X, l2.X) &&
                 p.Y >= Math.Min(l1.Y, l2.Y) && p.Y <= Math.Max(l1.Y, l2.Y))
             {
-                var v = Math.Abs((p.X - l1.X) * (l2.X - l1.X) - (l2.Y - l1.Y) * (p.Y - l1.Y));
-                return !(v > 0.000001);
+                //var v = Math.Abs((p.X - l1.X) * (l2.X - l1.X) - (l2.Y - l1.Y) * (p.Y - l1.Y));
+                var v = Math.Abs((l1.X - p.X) * (l2.Y - p.Y) - (l1.Y - p.Y) * (l2.X - p.X));
+                return !(v > 0.001);
             }
             return false;
         }
